@@ -21,26 +21,6 @@ rules/example.rules   example rules
 tools/gen_traffic.py  UDP traffic generator for testing, runs on the host
 ```
 
-## Where to look
-
-- **Receive loop**, `main()` in `src/main.cpp`: receive a burst, classify each
-  packet, free the burst.
-- **Parsing**, `src/parse.cpp`: every header is checked against the packet length
-  before it is read. The IPv4 header length is taken from the packet. Fragments
-  after the first get ports of zero.
-- **Key**, `src/flow_key.hpp`: 16 bytes with explicit zeroed padding, because
-  `rte_hash` hashes and compares all 16 bytes.
-- **Flow table**, `src/flow_table.cpp`: `rte_hash` stores the keys and returns a
-  fixed position for each one; flow state is kept in an array at that position.
-  A packet does a lookup first and adds the key only if the lookup fails.
-- **Firewall**, `src/rules.cpp` and `classify()` in `src/main.cpp`: rules are
-  checked once, on a flow's first packet, and the verdict is stored with the
-  flow. Later packets of the flow do no rule work.
-- **Timing**, `tsc_begin()` / `tsc_end()` in `src/main.cpp`: the time stamp
-  counter is read before and after classifying a burst, with `lfence` so the
-  reads are not reordered around the timed code. Receiving and freeing are not
-  timed. The count includes the cost of reading the counter.
-
 ## Requirements
 
 - DPDK built from source and installed, including its static libraries
