@@ -1,0 +1,6 @@
+# Fields: action proto src sport dst dport
+# The first matching rule wins. A flow that matches no rule is denied.
+
+deny   udp  any            any  10.10.10.99/32  20000-20099
+allow  udp  10.10.10.0/24  any  10.10.10.99/32  any
+deny   any  any            any  any             any
